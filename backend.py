@@ -1,5 +1,3 @@
-# backend.py
-
 import ollama
 import base64
 
