@@ -16,8 +16,9 @@ class ChatBubble(QWidget):
         bubble.setMaximumWidth(380)   # prevents stretching
         bubble.setStyleSheet(f"""
             QFrame {{
-                background-color: {"#9AF23F" if is_user else "#1E1E1E"};
+                background: transparent;
                 border-radius: 15px;
+                border: {" 1px solid #9AF23F" if is_user else "1px solid #FFDE52;"};
                 padding: 8px;
             }}
         """)

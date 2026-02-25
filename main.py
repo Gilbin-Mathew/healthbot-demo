@@ -9,7 +9,7 @@ from chat_bubble import ChatBubble
 from worker import ChatWorker
 
 
-class BleCalWindow(QMainWindow):
+class ChatWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.ui = Ui_BleCal()
@@ -24,17 +24,25 @@ class BleCalWindow(QMainWindow):
     def setup_chat_area(self):
         # Replace chatcontentframe with scrollable layout
 
-        self.scroll = QScrollArea(self.ui.chatcontentframe)
-        self.scroll.setGeometry(0, 0, 511, 521)
-        self.scroll.setWidgetResizable(True)
-        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.scroll_bar = QScrollArea(self.ui.chatcontentframe)
+        self.scroll_bar.setGeometry(0, 0, 511, 521)
+        self.scroll_bar.setWidgetResizable(True)
+        self.scroll_bar.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.scroll_bar.setStyleSheet("""
+        QScrollArea {
+            background: transparent;
+            border: none;
+        }
+    """)
+        
 
         self.chat_container = QWidget()
+        self.chat_container.setStyleSheet("background: transparent;")
         self.chat_layout = QVBoxLayout(self.chat_container)
         self.chat_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.chat_layout.setSpacing(10)
 
-        self.scroll.setWidget(self.chat_container)
+        self.scroll_bar.setWidget(self.chat_container)
 
     def connect_signals(self):
         self.ui.uploadbutton.clicked.connect(self.send_message)
@@ -76,12 +84,12 @@ class BleCalWindow(QMainWindow):
         self.auto_scroll()
 
     def auto_scroll(self):
-        bar = self.scroll.verticalScrollBar()
+        bar = self.scroll_bar.verticalScrollBar()
         bar.setValue(bar.maximum())
 
 def main():
     app = QApplication(sys.argv)
-    window = BleCalWindow()
+    window = ChatWindow()
     window.show()
     sys.exit(app.exec())
 
