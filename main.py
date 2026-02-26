@@ -5,8 +5,8 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QSc
 from PyQt6.QtCore import Qt
 from ui.blecal_ui import Ui_BleCal
 
-from chat_bubble import ChatBubble
-from worker import ChatWorker
+from ui.chat_bubble import ChatBubble
+from services.worker import ChatWorker
 
 
 class ChatWindow(QMainWindow):
