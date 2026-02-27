@@ -45,15 +45,19 @@ pip3 install -r requirements.txt
 
 ### to run the python programm
 
+* Gnu-linux
+
 ```bash
 source ./venv/bin/activate
 
 ```
+* Windows
 
 ```powershell
 .\venv\Scripts\Activate.ps1
 
 ```
+
 ```python
 python main.py
 
