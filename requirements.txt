@@ -4,4 +4,4 @@ pyqt6-tools
 bleak
 torch
 torchvision
-
+pillow

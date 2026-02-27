@@ -47,6 +47,7 @@ pip3 install -r requirements.txt
 
 >[!NOTE]
 > run these scriplets on the programs directory
+> I mean on the directory where the code is cloned
 
 * Gnu-linux
 

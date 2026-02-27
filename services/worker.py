@@ -1,7 +1,7 @@
 # worker.py
 
 from PyQt6.QtCore import QThread, pyqtSignal
-from backend import generate_response
+from services.backend import generate_response
 
 
 class ChatWorker(QThread):
