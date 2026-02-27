@@ -1,13 +1,14 @@
-# main.py
-
+import os
 import sys
+import time
 from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QScrollArea
 from PyQt6.QtCore import Qt
-from ui.blecal_ui import Ui_BleCal
 
+from models.model import FoodClassifier 
+from ui.blecal_ui import Ui_BleCal
 from ui.chat_bubble import ChatBubble
 from services.worker import ChatWorker
-
+from ui.paste_image_label import PasteImageLabel
 
 class ChatWindow(QMainWindow):
     def __init__(self):
@@ -17,9 +18,53 @@ class ChatWindow(QMainWindow):
 
         self.setup_chat_area()
         self.connect_signals()
-
+        
         self.worker = None
         self.loading_bubble = None
+
+        self.paste_label = PasteImageLabel(self.ui.imagelabel.parent())
+        self.paste_label.setGeometry(self.ui.imagelabel.geometry())
+
+        self.ui.imagelabel.deleteLater()
+        self.ui.imagelabel = self.paste_label
+        self.ui.addbutton.clicked.connect(self.on_click_add)
+
+    def on_click_add(self):
+        self.ui.chatedit.setPlaceholderText("  Loading image...")
+        self.recognition("models/food_model.pth")
+        self.delete_image()
+        self.ui.chatedit.setPlainText(self.classified["food"])
+        self.ui.chatedit.setPlaceholderText(" Ask anything  ")
+
+    def recognition(self, model_path):
+        imgpath = self.ui.imagelabel.image_path
+        if not imgpath:
+            print("image not exists")
+            return ''
+        if not model_path:
+            print('model not found')
+            return ''
+        self.rec_model = FoodClassifier(model_path)
+        self.classified = self.rec_model.predict(imgpath)
+        return
+
+
+    def delete_image(self):
+        path = self.ui.imagelabel.image_path
+
+        if not path:
+            print("No image to delete")
+            return
+
+        if os.path.exists(path):
+            os.remove(path)
+            print("Image deleted")
+
+            # Optional: clear the label visually
+            self.ui.imagelabel.clear()
+            self.ui.imagelabel._image_path = None
+        else:
+            print("File already removed")
 
     def setup_chat_area(self):
         # Replace chatcontentframe with scrollable layout
