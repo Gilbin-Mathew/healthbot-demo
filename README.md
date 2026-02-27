@@ -1,6 +1,6 @@
 # Demo for my Healthbot
 
-## Dev's setup 
+## Setup 
 
 ### cloning the repo
 
@@ -44,6 +44,9 @@ pip3 install -r requirements.txt
 ```
 
 ### to run the python programm
+
+>[!NOTE]
+> run these scriplets on the programs directory
 
 * Gnu-linux
 
