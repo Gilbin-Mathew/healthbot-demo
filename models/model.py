@@ -8,7 +8,7 @@ class FoodClassifier:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
         # Load the saved data (math + names)
-        checkpoint = torch.load(model_path)
+        checkpoint = torch.load(model_path, self.device)
         self.class_names = checkpoint['classes']
         
         # Build the ResNet18 skeleton
