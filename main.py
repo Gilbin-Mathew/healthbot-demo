@@ -33,7 +33,8 @@ class ChatWindow(QMainWindow):
         self.ui.chatedit.setPlaceholderText("  Loading image...")
         self.recognition("models/food_model.pth")
         self.delete_image()
-        self.ui.chatedit.setPlainText(self.classified["food"])
+        if self.classified["confidence"] > 60:
+            self.ui.chatedit.setPlainText(self.classified["food"])
         self.ui.chatedit.setPlaceholderText(" Ask anything  ")
 
     def recognition(self, model_path):

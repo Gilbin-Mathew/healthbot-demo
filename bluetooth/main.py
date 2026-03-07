@@ -4,7 +4,6 @@ from utils.config_loader import ConfigLoader
 from core.user import ScaleUser
 from drivers.qn_handler import QNHandler
 from ble.client import BLEScaleClient
-from Bodyindex import body_composition
 
 
 async def main():

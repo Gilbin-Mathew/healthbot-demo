@@ -42,7 +42,7 @@ class FoodClassifier:
             
         return {
             "food": self.class_names[index.item()],
-            "confidence": f"{confidence.item() * 100:.2f}%"
+            "confidence": confidence.item() * 100.00
         }
 
 if __name__ == "__main__":
