@@ -1,14 +1,19 @@
 import os
 import sys
 import time
-from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QScrollArea
+import asyncio
+import yaml
+
+from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QScrollArea, QInputDialog
 from PyQt6.QtCore import Qt
 
-from models.model import FoodClassifier 
+from bluetooth.utils.config_loader import ConfigLoader
+from models.model import FoodClassifier
 from ui.blecal_ui import Ui_BleCal
 from ui.chat_bubble import ChatBubble
 from services.worker import ChatWorker
 from ui.paste_image_label import PasteImageLabel
+
 
 class ChatWindow(QMainWindow):
     def __init__(self):
@@ -29,6 +34,58 @@ class ChatWindow(QMainWindow):
         self.ui.imagelabel = self.paste_label
         self.ui.addbutton.clicked.connect(self.on_click_add)
 
+        self.user_age = None
+        self.user_gender = None
+        self.user_height = None
+
+        self.ui.ActionAge.triggered.connect(self.set_age)
+        self.ui.ActionHeight.triggered.connect(self.set_height)
+        self.ui.ActionGender.triggered.connect(self.set_gender)
+
+        return
+
+    def set_age(self):
+        value, ok = QInputDialog.getInt(self, "Age", "Enter Age:", 18, 1, 120)
+        if ok:
+            self.user_age = value
+        with open("bluetooth/config.yaml") as f:
+            config = yaml.safe_load(f)
+
+        config["scale"]["user"]["age"] = self.user_age
+
+        with open("bluetooth/config.yaml", "w") as f:
+            yaml.dump(config, f, sort_keys=False)
+        return
+
+    def set_height(self):
+        value, ok = QInputDialog.getDouble(self, "Height", "Enter Height(cm):", 170, 50, 250)
+        if ok:
+            self.user_height = value
+        with open("bluetooth/config.yaml") as f:
+            config = yaml.safe_load(f)
+
+        config["scale"]["user"]["height"] = self.user_height
+
+        with open("bluetooth/config.yaml", "w") as f:
+            yaml.dump(config, f, sort_keys=False)
+        return
+
+    def set_gender(self):
+        items = ["male", "female"]
+        value, ok = QInputDialog.getItem(self, "Gender", "Select Gender:", items, 0, False)
+        if ok:
+            self.user_gender = value
+        with open("bluetooth/config.yaml") as f:
+            config = yaml.safe_load(f)
+
+        config["scale"]["user"]["gender"] = self.user_gender
+
+        with open("bluetooth/config.yaml", "w") as f:
+            yaml.dump(config, f, sort_keys=False)
+        return
+
+
+
     def on_click_add(self):
         self.ui.chatedit.setPlaceholderText("  Loading image...")
         self.recognition("models/food_model.pth")
@@ -36,6 +93,7 @@ class ChatWindow(QMainWindow):
         if self.classified["confidence"] > 60:
             self.ui.chatedit.setPlainText(self.classified["food"])
         self.ui.chatedit.setPlaceholderText(" Ask anything  ")
+        return
 
     def recognition(self, model_path):
         imgpath = self.ui.imagelabel.image_path
@@ -66,6 +124,7 @@ class ChatWindow(QMainWindow):
             self.ui.imagelabel._image_path = None
         else:
             print("File already removed")
+        return
 
     def setup_chat_area(self):
         # Replace chatcontentframe with scrollable layout

@@ -29,45 +29,57 @@ class BodyCompositionCalculator:
 
         height_m = self.height / 100
 
-        bmi = weight / (height_m ** 2)
+    # BMI
+        self.bmi = weight / (height_m ** 2)
 
+    # impedance index
+        self.impedance_index = (self.height ** 2) / resistance
+
+    # total body water estimation
         if self.sex == "male":
-            body_fat = (1.20 * bmi) + (0.23 * self.age) - 16.2
+            self.tbw = (0.372 * self.impedance_index) + (0.142 * weight) + 0.069
         else:
-            body_fat = (1.20 * bmi) + (0.23 * self.age) - 5.4
+            self.tbw = (0.356 * self.impedance_index) + (0.111 * weight) + 0.107
 
-        body_fat = max(5, min(body_fat, 50))
+        self.hydration = (self.tbw / weight) * 100
 
-        hydration = 100 - body_fat
-        lean_mass = weight * (1 - body_fat/100)
+    # lean mass
+        self.lean_mass = self.tbw / 0.73
 
-        muscle_mass = lean_mass * 0.55
-        skeletal_muscle = (muscle_mass / weight) * 100
+    # body fat mass
+        self.fat_mass = weight - self.lean_mass
+        self.body_fat = (self.fat_mass / weight) * 100
 
-        bone_mass = weight * 0.04
+        self.muscle_mass = self.lean_mass * 0.55
 
-        subcutaneous_fat = body_fat * 0.8
-        visceral_fat = body_fat * 0.1
+        self.skeletal_muscle = (self.muscle_mass / weight) * 100
 
-        protein = lean_mass * 0.20
+        self.bone_mass = weight * 0.04
 
+        self.subcutaneous_fat = self.body_fat * 0.8
+
+        self.visceral_fat = self.body_fat * 0.1
+
+        self.protein = self.lean_mass * 0.20
+
+    # BMR
         if self.sex == "male":
-            bmr = 10*weight + 6.25*self.height - 5*self.age + 5
+            self.bmr = 10 * weight + 6.25 * self.height - 5 * self.age + 5
         else:
-            bmr = 10*weight + 6.25*self.height - 5*self.age - 161
+            self.bmr = 10 * weight + 6.25 * self.height - 5 * self.age - 161
 
-        metabolic_age = self.calculate_metabolic_age(bmr)
+        self.metabolic_age = self.calculate_metabolic_age(self.bmr)
 
         return {
-            "BMI": round(bmi,2),
-            "body_fat": round(body_fat,2),
-            "hydration": round(hydration,2),
-            "muscle_mass": round(muscle_mass,2),
-            "skeletal_muscle": round(skeletal_muscle,2),
-            "bone_mass": round(bone_mass,2),
-            "subcutaneous_fat": round(subcutaneous_fat,2),
-            "visceral_fat": round(visceral_fat,2),
-            "protein": round(protein,2),
-            "BMR": int(bmr),
-            "metabolic_age": metabolic_age
+            "BMI": round(self.bmi, 2),
+            "body_fat": round(self.body_fat, 2),
+            "hydration": round(self.hydration, 2),
+            "muscle_mass": round(self.muscle_mass, 2),
+            "skeletal_muscle": round(self.skeletal_muscle, 2),
+            "bone_mass": round(self.bone_mass, 2),
+            "subcutaneous_fat": round(self.subcutaneous_fat, 2),
+            "visceral_fat": round(self.visceral_fat, 2),
+            "protein": round(self.protein, 2),
+            "BMR": int(self.bmr),
+            "metabolic_age": self.metabolic_age
         }
