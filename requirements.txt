@@ -1,6 +1,5 @@
 ollama
 PyQt6
-pyqt6-tools
 bleak
 torch
 torchvision
