@@ -1,11 +1,12 @@
 import os
+import threading
 import sys
-import time
 import asyncio
 import yaml
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QScrollArea, QInputDialog
 from PyQt6.QtCore import Qt
+from qasync import QEventLoop, asyncSlot
 
 from utils.config_loader import ConfigLoader
 from models.model import FoodClassifier
@@ -13,13 +14,15 @@ from ui.blecal_ui import Ui_BleCal
 from ui.chat_bubble import ChatBubble
 from services.worker import ChatWorker
 from ui.paste_image_label import PasteImageLabel
+from Syncal import SynCalc
 
 
 class ChatWindow(QMainWindow):
-    def __init__(self):
+    def init(self):
         super().__init__()
         self.ui = Ui_BleCal()
         self.ui.setupUi(self)
+        self.user_matrix = None
 
         self.setup_chat_area()
         self.connect_signals()
@@ -42,7 +45,57 @@ class ChatWindow(QMainWindow):
         self.ui.ActionHeight.triggered.connect(self.set_height)
         self.ui.ActionGender.triggered.connect(self.set_gender)
 
+        self.ui.ActionMeasure.triggered.connect(self.ble_thread_start)
         return
+
+    def ble_thread_start(self):
+        self.ble_thread = threading.Thread(target=self.start_measure, daemon=True)
+        self.ble_thread.start()
+        return
+        
+    def setlables(self):
+        uweight = float(self.user_matrix.get("weight", 0))
+        ubmi = float(self.user_matrix.get("BMI", 0))
+        ubf = float(self.user_matrix.get("body_fat", 0))
+        uhy = float(self.user_matrix.get("hydration", 0))
+        umm = float(self.user_matrix.get("muscle_mass", 0))
+        usm = float(self.user_matrix.get("skeletal_muscle", 0))
+        ubm = float(self.user_matrix.get("bone_mass", 0))
+        usf = float(self.user_matrix.get("subcutaneous_fat", 0))
+        uvf = float(self.user_matrix.get("visceral_fat", 0))
+        upt = float(self.user_matrix.get("protein", 0))
+        ubmr = self.user_matrix.get("BMR", 0)
+        uma = float(self.user_matrix.get("metabolic_age", 0))
+
+        self.ui.weightdatalabel.setText(f"      {uweight}")
+        self.ui.bmidatalabel.setText(f"    {ubmi}")
+        self.ui.bodyfatdatalabel.setText(f"    {ubf}")
+        self.ui.hydrationdatalabel.setText(f"    {uhy}")
+        self.ui.musclemassdatalabel.setText(f"    {umm}")
+        self.ui.bonemassdatalabel.setText(f"    {ubm}")
+        self.ui.skeltalmuscledatalabel.setText(f"    {usm}")
+        self.ui.subfatdatalabel.setText(f"    {usf}")
+        self.ui.visfatdatalabel.setText(f"    {uvf}")
+        self.ui.protiendatalabel.setText(f"    {upt}")
+        self.ui.bmrdatalabel.setText(f"    {ubmr}")
+        self.ui.metabolicagedatalabel.setText(f"    {uma}")
+        self.ble_thread = None
+        return
+
+
+    def start_measure(self):
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(self.measure())
+        self.setlables()
+        return
+
+    @asyncSlot()
+    async def measure(self):
+        syncal = SynCalc()
+        await syncal.calc()
+        self.user_matrix = syncal.calculated_metrix_dict
+        print(syncal.calculated_metrix_dict)
 
     def set_age(self):
 
@@ -120,7 +173,7 @@ class ChatWindow(QMainWindow):
         self.ui.chatedit.setPlaceholderText("  Loading image...")
         self.recognition("models/food_model.pth")
         self.delete_image()
-        if self.classified["confidence"] > 60:
+        if self.classified["confidence"] > 70:
             self.ui.chatedit.setPlainText(self.classified["food"])
         self.ui.chatedit.setPlaceholderText(" Ask anything  ")
         return
@@ -178,9 +231,11 @@ class ChatWindow(QMainWindow):
         self.chat_layout.setSpacing(10)
 
         self.scroll_bar.setWidget(self.chat_container)
+        return
 
     def connect_signals(self):
         self.ui.uploadbutton.clicked.connect(self.send_message)
+        return
 
     def send_message(self):
         text = self.ui.chatedit.toPlainText().strip()
@@ -201,6 +256,7 @@ class ChatWindow(QMainWindow):
         self.worker = ChatWorker(text)
         self.worker.finished_signal.connect(self.handle_response)
         self.worker.start()
+        return
 
     def handle_response(self, text, images):
         if self.loading_bubble:
@@ -212,21 +268,31 @@ class ChatWindow(QMainWindow):
 
         for img in images:
             self.add_bubble(image=img, is_user=False)
+        return
 
     def add_bubble(self, text=None, image=None, is_user=False):
         bubble = ChatBubble(text=text, image=image, is_user=is_user)
         self.chat_layout.addWidget(bubble)
         self.auto_scroll()
+        return
 
     def auto_scroll(self):
         bar = self.scroll_bar.verticalScrollBar()
         bar.setValue(bar.maximum())
+        return
 
 def main():
     app = QApplication(sys.argv)
+
+    loop = QEventLoop(app)
+    asyncio.set_event_loop(loop)
+
     window = ChatWindow()
+    window.init()
     window.show()
     sys.exit(app.exec())
+    with loop:
+        loop.run_forever()
 
 if __name__ == "__main__":
     main()

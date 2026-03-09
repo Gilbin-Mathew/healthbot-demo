@@ -68,9 +68,10 @@ class BodyCompositionCalculator:
         else:
             self.bmr = 10 * weight + 6.25 * self.height - 5 * self.age - 161
 
-        self.metabolic_age = self.calculate_metabolic_age(self.bmr)
+        self.metabolic_age = self.calculate_metabolic_age(self.bmr) / 3
 
         return {
+            "weight": round(weight, 2),
             "BMI": round(self.bmi, 2),
             "body_fat": round(self.body_fat, 2),
             "hydration": round(self.hydration, 2),

@@ -501,7 +501,7 @@ class Ui_BleCal(object):
         self.bonemasslabel.setText(_translate("BleCal", "BM(kg)"))
         self.bonemassdatalabel.setText(_translate("BleCal", "    --.--"))
         self.bmrlabel.setText(_translate("BleCal", " BMR"))
-        self.bmrdatalabel.setText(_translate("BleCal", "    --.--"))
+        self.bmrdatalabel.setText(_translate("BleCal", "    -----"))
         self.subfatlabel.setText(_translate("BleCal", " SF(%)"))
         self.subfatdatalabel.setText(_translate("BleCal", "    --.--"))
         self.skeltalmusclelabel.setText(_translate("BleCal", "SM(%)"))
