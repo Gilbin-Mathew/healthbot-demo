@@ -7,7 +7,7 @@ import yaml
 from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QScrollArea, QInputDialog
 from PyQt6.QtCore import Qt
 
-from bluetooth.utils.config_loader import ConfigLoader
+from utils.config_loader import ConfigLoader
 from models.model import FoodClassifier
 from ui.blecal_ui import Ui_BleCal
 from ui.chat_bubble import ChatBubble
@@ -45,46 +45,76 @@ class ChatWindow(QMainWindow):
         return
 
     def set_age(self):
-        value, ok = QInputDialog.getInt(self, "Age", "Enter Age:", 18, 1, 120)
-        if ok:
-            self.user_age = value
-        with open("bluetooth/config.yaml") as f:
+
+        with open("config.yaml") as f:
             config = yaml.safe_load(f)
 
-        config["scale"]["user"]["age"] = self.user_age
+        current_age = config["scale"]["user"]["age"]
 
-        with open("bluetooth/config.yaml", "w") as f:
-            yaml.dump(config, f, sort_keys=False)
+        value, ok = QInputDialog.getInt(
+            self,
+            "Age",
+            "Enter Age:",
+            current_age,   # previously saved value
+            1,
+            120
+        )
+
+        if ok:
+            config["scale"]["user"]["age"] = value
+
+            with open("config.yaml", "w") as f:
+                yaml.dump(config, f, sort_keys=False)
         return
 
     def set_height(self):
-        value, ok = QInputDialog.getDouble(self, "Height", "Enter Height(cm):", 170, 50, 250)
-        if ok:
-            self.user_height = value
-        with open("bluetooth/config.yaml") as f:
+
+        with open("config.yaml") as f:
             config = yaml.safe_load(f)
 
-        config["scale"]["user"]["height"] = self.user_height
+        current_height = config["scale"]["user"]["height"]
 
-        with open("bluetooth/config.yaml", "w") as f:
-            yaml.dump(config, f, sort_keys=False)
+        value, ok = QInputDialog.getDouble(
+            self,
+            "Height",
+            "Enter Height (cm):",
+            current_height,   # default value
+            50,
+            250
+        )
+
+        if ok:
+            config["scale"]["user"]["height"] = value
+
+            with open("config.yaml", "w") as f:
+                yaml.dump(config, f, sort_keys=False)
         return
 
     def set_gender(self):
-        items = ["male", "female"]
-        value, ok = QInputDialog.getItem(self, "Gender", "Select Gender:", items, 0, False)
-        if ok:
-            self.user_gender = value
-        with open("bluetooth/config.yaml") as f:
+
+        with open("config.yaml") as f:
             config = yaml.safe_load(f)
 
-        config["scale"]["user"]["gender"] = self.user_gender
+        current_gender = config["scale"]["user"]["gender"]
 
-        with open("bluetooth/config.yaml", "w") as f:
-            yaml.dump(config, f, sort_keys=False)
+        items = ["male", "female"]
+        default_index = items.index(current_gender)
+
+        value, ok = QInputDialog.getItem(
+            self,
+            "Gender",
+            "Select Gender:",
+            items,
+            default_index,   # previously saved value
+            False
+        )
+
+        if ok:
+            config["scale"]["user"]["gender"] = value
+
+            with open("config.yaml", "w") as f:
+                yaml.dump(config, f, sort_keys=False)
         return
-
-
 
     def on_click_add(self):
         self.ui.chatedit.setPlaceholderText("  Loading image...")

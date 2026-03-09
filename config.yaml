@@ -2,7 +2,7 @@ scale:
   address: D8:0B:CB:51:B5:1C
   user:
     id: 1
-    age: 18
-    height: 170.0
-    gender: Male
+    age: 20
+    height: 165.0
+    gender: female
   unit: kg
