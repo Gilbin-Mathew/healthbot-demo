@@ -1,6 +1,6 @@
 import asyncio
 
-from bluetooth.utils.config_loader import ConfigLoader
+from utils.config_loader import ConfigLoader
 from bluetooth.core.user import ScaleUser
 from bluetooth.drivers.qn_handler import QNHandler
 from bluetooth.ble.client import BLEScaleClient
@@ -37,9 +37,10 @@ class SynCalc:
         self.unpacked = Sync()
         await self.unpacked.sync()
 
-        self.calculate_metrix = BodyCompositionCalculator(self.unpacked.user_cfg["height"], self.unpacked.user_cfg["weight"], self.unpacked.user_cfg["gender"])
+        self.calculate_metrix = BodyCompositionCalculator(self.unpacked.user_cfg["height"], self.unpacked.UWeight, self.unpacked.user_cfg["gender"])
         self.calculated_metrix_dict = self.calculate_metrix.calculate(self.unpacked.UWeight, self.unpacked.UResistance2)
 
 if __name__ == "__main__":
     syncal = SynCalc()
     asyncio.run(syncal.calc())
+    print(syncal.calculated_metrix_dict)

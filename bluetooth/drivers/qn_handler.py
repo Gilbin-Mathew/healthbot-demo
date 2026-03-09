@@ -1,7 +1,7 @@
 import time
 
-from core.device_handler import ScaleDeviceHandler
-from core.measurement import ScaleMeasurement
+from bluetooth.core.device_handler import ScaleDeviceHandler
+from bluetooth.core.measurement import ScaleMeasurement
 
 
 class QNHandler(ScaleDeviceHandler):
