@@ -51,6 +51,7 @@ class ChatWindow(QMainWindow):
     def ble_thread_start(self):
         self.ble_thread = threading.Thread(target=self.start_measure, daemon=True)
         self.ble_thread.start()
+        self.ble_thread.join()
         return
         
     def setlables(self):
