@@ -63,6 +63,6 @@ source ./venv/bin/activate
 ```
 
 ```python
-python main.py
+python Health-Bot.py
 
 ```
