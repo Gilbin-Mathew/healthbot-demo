@@ -1,5 +1,15 @@
 # Demo for my Healthbot
 
+
+### just a damn college project
+
+>[!NOTE]
+> works only with qnscale "ble scale"
+> and I only prefer python 3.13
+>
+>dependencies like ollama with llava "Ai model" haven't show in the setup
+
+
 ## Setup 
 
 ### cloning the repo
